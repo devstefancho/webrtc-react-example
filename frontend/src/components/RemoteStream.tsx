@@ -18,6 +18,8 @@ const RemoteStream: FC<PropTypes> = ({ localStream }) => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const [offererSDP, setOffererSDP] = useState<string>("");
   const [answererSDP, setAnswererSDP] = useState<string>("");
+  const [offer, setOffer] = useState<RTCSessionDescriptionInit>();
+  const [answer, setAnswer] = useState<RTCSessionDescriptionInit>();
 
   useEffect(() => {
     const init = async () => {
@@ -57,7 +59,14 @@ const RemoteStream: FC<PropTypes> = ({ localStream }) => {
   const createOffer = async (pc: RTCPeerConnection | null) => {
     if (!pc) return;
 
-    const offer = await pc.createOffer();
+    const _offer = await pc.createOffer();
+    setOffer(_offer);
+  };
+
+  const setLocalDescriptionByOfferer = async (pc: RTCPeerConnection | null) => {
+    if (!pc) return;
+
+    /** setLocalDescription 설정 이후에 ice candidates가 비동기적으로 생성됨 */
     await pc.setLocalDescription(offer);
   };
 
@@ -71,7 +80,16 @@ const RemoteStream: FC<PropTypes> = ({ localStream }) => {
 
     const offer = JSON.parse(offererSDP);
     await pc.setRemoteDescription(offer);
-    const answer = await pc.createAnswer();
+    const _answer = await pc.createAnswer();
+    setAnswer(_answer);
+  };
+
+  const setLocalDescriptionByAnswerer = async (
+    pc: RTCPeerConnection | null
+  ) => {
+    if (!pc) return;
+
+    /** setLocalDescription 설정 이후에 ice candidates가 비동기적으로 생성됨 */
     await pc.setLocalDescription(answer);
   };
 
@@ -104,8 +122,11 @@ const RemoteStream: FC<PropTypes> = ({ localStream }) => {
         <button onClick={() => handleAddTrackToPeerConnection(pc)}>
           Add track to PeerConnection
         </button>
-        <button onClick={() => createOffer(pc)}>(A) Create offer</button>
-        <button onClick={() => getOffer(pc)}>(A) offer</button>
+        <button onClick={() => createOffer(pc)}>(A) Create Offer</button>
+        <button onClick={() => setLocalDescriptionByOfferer(pc)}>
+          (A) Set Local Description
+        </button>
+        <button onClick={() => getOffer(pc)}>(A) Get Offer</button>
         <input
           type="text"
           value={offererSDP}
@@ -114,7 +135,10 @@ const RemoteStream: FC<PropTypes> = ({ localStream }) => {
           }}
         />
         <button onClick={() => createAnswer(pc)}>(B) Create Answer</button>
-        <button onClick={() => getAnswer(pc)}>(B) Answer</button>
+        <button onClick={() => setLocalDescriptionByAnswerer(pc)}>
+          (B) Set Local Description
+        </button>
+        <button onClick={() => getAnswer(pc)}>(B) Get Answer</button>
         <input
           type="text"
           value={answererSDP}
