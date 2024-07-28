@@ -13,6 +13,9 @@ const Index: FC<PropTypes> = () => {
       <div>
         <Link to="/advanced">Advanced</Link>
       </div>
+      <div>
+        <Link to="/screen-share">Screen Share</Link>
+      </div>
     </div>
   );
 };

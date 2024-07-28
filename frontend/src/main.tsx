@@ -5,6 +5,7 @@ import "./App.css";
 import "./index.css";
 import BasicPage from "./pages/basic/index.tsx";
 import AdvancedPage from "./pages/advanced/index.tsx";
+import ScreenSharePage from "./pages/screen-share/index.tsx";
 import Index from "./pages/index.tsx";
 
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/advanced",
     element: <AdvancedPage />,
+  },
+  {
+    path: "/screen-share",
+    element: <ScreenSharePage />,
   },
 ]);
 
